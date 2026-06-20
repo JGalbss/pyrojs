@@ -26,6 +26,8 @@ export interface EngineStats {
   readonly capacity: number
   readonly shells: number
   readonly running: boolean
+  /** Smoothed frames per second of the live render loop. */
+  readonly fps: number
 }
 
 export interface FinaleOptions {
@@ -58,6 +60,13 @@ const clampDt = (dt: number): number => {
   if (dt < 0) return 0
   if (dt > MAX_DT) return MAX_DT
   return dt
+}
+
+const smoothFps = (previous: number, dt: number): number => {
+  if (dt <= 0) return previous
+  const instant = 1 / dt
+  if (previous <= 0) return instant
+  return previous * 0.9 + instant * 0.1
 }
 
 const resolveSeed = (seed: number | undefined): Effect.Effect<number> => {
@@ -100,6 +109,7 @@ export const makeEngine: (
     const configRef = yield* Ref.make(config)
     const running = yield* Ref.make(config.autoplay)
     const lastTime = yield* Ref.make(0)
+    const fps = yield* Ref.make(0)
     // The document's visibility is external DOM state; mirror it into a plain
     // holder so the event callback stays a pure side effect (no Effect runs
     // detached inside it) and the loop can read it directly.
@@ -119,8 +129,9 @@ export const makeEngine: (
       const isRunning = yield* Ref.get(running)
       const paused = !isRunning || (visibility.hidden && cfg.pauseWhenHidden)
       if (paused) return
-      const dt = clampDt((now - prev) / 1000) * cfg.speed
-      yield* Effect.sync(() => sim.tick(dt, now / 1000))
+      const rawDt = clampDt((now - prev) / 1000)
+      yield* Ref.update(fps, (previous) => smoothFps(previous, rawDt))
+      yield* Effect.sync(() => sim.tick(rawDt * cfg.speed, now / 1000))
     })
     yield* Effect.forkScoped(Effect.forever(frame))
 
@@ -168,11 +179,13 @@ export const makeEngine: (
     const stats: Effect.Effect<EngineStats> = Effect.gen(function* () {
       const snapshot = sim.stats()
       const isRunning = yield* Ref.get(running)
+      const currentFps = yield* Ref.get(fps)
       return {
         particles: snapshot.particles,
         capacity: snapshot.capacity,
         shells: snapshot.shells,
         running: isRunning,
+        fps: Math.round(currentFps),
       }
     })
 

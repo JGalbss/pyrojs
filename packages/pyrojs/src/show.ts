@@ -17,6 +17,25 @@ export interface Show {
 }
 
 // ---------------------------------------------------------------------------
+// Friendly time inputs: "2s", "500ms", a raw millisecond number, or a Duration.
+// ---------------------------------------------------------------------------
+export type ShowTime = `${number}s` | `${number}ms` | number | Duration.Duration
+
+const COMPACT_TIME = /^(\d+(?:\.\d+)?)(ms|s)$/
+const compactUnit: Record<string, (value: number) => Duration.Duration> = {
+  ms: Duration.millis,
+  s: Duration.seconds,
+}
+
+const toDuration = (time: ShowTime): Duration.Duration => {
+  if (typeof time === "number") return Duration.millis(time)
+  if (typeof time !== "string") return time
+  const match = COMPACT_TIME.exec(time.trim())
+  if (match === null) return Duration.seconds(0)
+  return compactUnit[match[2]](Number(match[1]))
+}
+
+// ---------------------------------------------------------------------------
 // Spec builders — terse, typed shorthands that produce a LaunchSpecInput.
 //   peony({ colors: ['#ffd700'] })  ->  { type: 'peony', colors: [...] }
 // ---------------------------------------------------------------------------
@@ -73,9 +92,9 @@ export const salvo = (count: number, spec: LaunchSpecInput): Show => ({
   run: (engine) => fireEach(engine, Array.from({ length: Math.max(1, count) }, () => spec)),
 })
 
-/** Pause for a duration ("2 seconds", 500, Duration.seconds(2)). */
-export const wait = (duration: Duration.DurationInput): Show => ({
-  run: () => Effect.sleep(duration),
+/** Pause for a duration ("2s", "500ms", 500, Duration.seconds(2)). */
+export const wait = (duration: ShowTime): Show => ({
+  run: () => Effect.sleep(toDuration(duration)),
 })
 
 /** Run shows one after another (each completes before the next begins). */
@@ -95,7 +114,7 @@ export const all = (...shows: ReadonlyArray<Show>): Show => ({
 
 export interface RepeatOptions {
   readonly times: number
-  readonly every: Duration.DurationInput
+  readonly every: ShowTime
 }
 
 /** Repeat a show `times` times, spaced by `every`. */
@@ -103,7 +122,7 @@ export const repeat = (options: RepeatOptions, item: Show): Show => ({
   run: (engine) =>
     item.run(engine).pipe(
       Effect.repeat(
-        Schedule.spaced(options.every).pipe(
+        Schedule.spaced(toDuration(options.every)).pipe(
           Schedule.intersect(Schedule.recurs(Math.max(0, options.times - 1))),
         ),
       ),
@@ -112,12 +131,12 @@ export const repeat = (options: RepeatOptions, item: Show): Show => ({
 })
 
 export interface Cue {
-  readonly offset: Duration.DurationInput
+  readonly offset: ShowTime
   readonly show: Show
 }
 
 /** Schedule a show to begin at an absolute offset from the timeline start. */
-export const at = (offset: Duration.DurationInput, show: Show): Cue => ({ offset, show })
+export const at = (offset: ShowTime, show: Show): Cue => ({ offset, show })
 
 /** A choreographed timeline: every cue fires at its own offset, concurrently.
  *  Unbounded by design — each cue must start its own countdown immediately. */
@@ -125,7 +144,7 @@ export const timeline = (...cues: ReadonlyArray<Cue>): Show => ({
   run: (engine) =>
     Effect.all(
       cues.map((cue) =>
-        Effect.sleep(cue.offset).pipe(Effect.zipRight(cue.show.run(engine))),
+        Effect.sleep(toDuration(cue.offset)).pipe(Effect.zipRight(cue.show.run(engine))),
       ),
       { concurrency: "unbounded", discard: true },
     ),
