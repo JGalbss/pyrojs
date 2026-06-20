@@ -148,9 +148,12 @@ export class CanvasRenderer implements Renderer {
       if (alpha <= 0.003) continue
 
       ctx.globalAlpha = Math.min(alpha, 1)
-      const r = particles.r[i]
-      const g = particles.g[i]
-      const b = particles.b[i]
+      // Color shift: lerp toward the target color over the particle's life
+      // (t is 0 when the ColorShift flag is absent, so this is a no-op then).
+      const t = colorShiftT(flags, ratio)
+      const r = (particles.r[i] + (particles.r2[i] - particles.r[i]) * t) | 0
+      const g = (particles.g[i] + (particles.g2[i] - particles.g[i]) * t) | 0
+      const b = (particles.b[i] + (particles.b2[i] - particles.b[i]) * t) | 0
 
       if ((flags & ParticleFlag.Streak) !== 0) {
         this.drawStreak(particles, i, r, g, b)
@@ -259,8 +262,16 @@ const lifeRatio = (life: number, maxLife: number): number => {
 const TWINKLE_FREQUENCY = 34
 
 const baseAlpha = (ratio: number, flags: number): number => {
+  if ((flags & ParticleFlag.Ghost) !== 0) return Math.sin(Math.PI * (1 - ratio))
   if ((flags & ParticleFlag.NoFade) !== 0) return 1
   return ratio
+}
+
+// Lerp amount toward the target color: grows with age when ColorShift is set,
+// otherwise 0 (so the lerp is a no-op).
+const colorShiftT = (flags: number, ratio: number): number => {
+  if ((flags & ParticleFlag.ColorShift) !== 0) return 1 - ratio
+  return 0
 }
 
 const particleAlpha = (

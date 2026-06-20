@@ -20,6 +20,10 @@ export const ParticleFlag = {
   NoFade: 1 << 2,
   /** Additive glow sprite rather than a flat dot. */
   Glow: 1 << 3,
+  /** Lerps from its color toward its target color (r2,g2,b2) over its life. */
+  ColorShift: 1 << 4,
+  /** Fades in, peaks mid-life, then fades out (ghost / lampare). */
+  Ghost: 1 << 5,
 } as const
 
 export type ParticleFlag = (typeof ParticleFlag)[keyof typeof ParticleFlag]
@@ -37,6 +41,10 @@ export interface ParticleInit {
   r: number
   g: number
   b: number
+  /** Target color, lerped toward when the ColorShift flag is set. */
+  r2: number
+  g2: number
+  b2: number
   flags: number
   seed: number
 }
@@ -64,6 +72,9 @@ export class Particles {
   r: Uint8ClampedArray
   g: Uint8ClampedArray
   b: Uint8ClampedArray
+  r2: Uint8ClampedArray
+  g2: Uint8ClampedArray
+  b2: Uint8ClampedArray
   flags: Uint8Array
 
   constructor(initialCapacity: number = DEFAULT_CAPACITY, maxCapacity: number = 200_000) {
@@ -85,6 +96,9 @@ export class Particles {
     this.r = new Uint8ClampedArray(this.capacity)
     this.g = new Uint8ClampedArray(this.capacity)
     this.b = new Uint8ClampedArray(this.capacity)
+    this.r2 = new Uint8ClampedArray(this.capacity)
+    this.g2 = new Uint8ClampedArray(this.capacity)
+    this.b2 = new Uint8ClampedArray(this.capacity)
     this.flags = new Uint8Array(this.capacity)
   }
 
@@ -118,6 +132,9 @@ export class Particles {
     this.r[i] = init.r
     this.g[i] = init.g
     this.b[i] = init.b
+    this.r2[i] = init.r2
+    this.g2[i] = init.g2
+    this.b2[i] = init.b2
     this.flags[i] = init.flags
     return i
   }
@@ -153,6 +170,9 @@ export class Particles {
     this.r[dst] = this.r[src]
     this.g[dst] = this.g[src]
     this.b[dst] = this.b[src]
+    this.r2[dst] = this.r2[src]
+    this.g2[dst] = this.g2[src]
+    this.b2[dst] = this.b2[src]
     this.flags[dst] = this.flags[src]
   }
 
@@ -173,6 +193,9 @@ export class Particles {
     this.r = growClamped(this.r, next)
     this.g = growClamped(this.g, next)
     this.b = growClamped(this.b, next)
+    this.r2 = growClamped(this.r2, next)
+    this.g2 = growClamped(this.g2, next)
+    this.b2 = growClamped(this.b2, next)
     this.flags = growByte(this.flags, next)
     this.capacity = next
     return true

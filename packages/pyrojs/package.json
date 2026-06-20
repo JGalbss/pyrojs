@@ -1,7 +1,7 @@
 {
   "name": "pyrojs",
   "version": "0.1.0",
-  "description": "A fireworks engine for the web — like react-confetti, but for fireworks. Tiny, fast, framework-agnostic core with React bindings and an optional Effect-TS choreography DSL.",
+  "description": "A fireworks engine for the web — like react-confetti, but fireworks. 68 firework types, image/SVG/text fireworkify, a one-line React overlay, and an Effect-TS choreography DSL. Tiny, fast, and tree-shakeable.",
   "type": "module",
   "license": "MIT",
   "author": "JGalbss",

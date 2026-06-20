@@ -38,6 +38,53 @@ export const FIREWORK_TYPES = [
   "kamuro",
   "flitter",
   "multibreak",
+  // aerial2
+  "nishiki",
+  "coconut",
+  "saturn",
+  "diadem",
+  "bouquet",
+  "fallingleaves",
+  // crackle
+  "crackle",
+  "dragoneggs",
+  "timerain",
+  "cracklingrain",
+  // patterns
+  "smiley",
+  "butterfly",
+  "maple",
+  "bowtie",
+  "snail",
+  // motion
+  "tourbillion",
+  "serpent",
+  "hummer",
+  "helicopter",
+  "girandola",
+  "wheel",
+  "pinwheel",
+  "parachute",
+  // ground & novelty
+  "conefountain",
+  "mine",
+  "groundbloom",
+  "sparkler",
+  "firecracker",
+  "chaser",
+  "jumpingjack",
+  "romancandle",
+  "waterfall",
+  "smoke",
+  "snake",
+  "snapper",
+  "partypopper",
+  "tank",
+  // special / sound
+  "report",
+  "flash",
+  "colorchange",
+  "ghost",
 ] as const
 
 export type FireworkType = (typeof FIREWORK_TYPES)[number]

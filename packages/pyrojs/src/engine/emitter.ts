@@ -18,6 +18,8 @@ export interface StarSpec {
   /** Air drag coefficient. */
   drag: number
   color: Rgb
+  /** Target color (lerped toward when the ColorShift flag is set). */
+  color2?: Rgb
   /** Bitmask from ParticleFlag. */
   flags: number
 }

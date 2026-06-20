@@ -4,7 +4,7 @@
 
 ### A fireworks engine for the web — like react-confetti, but fireworks.
 
-Tiny, fast, framework-agnostic core · React bindings · an Effect-TS choreography DSL · **27 firework types** · fireworkify any image · build your own show.
+Tiny, fast, framework-agnostic core · React bindings · an Effect-TS choreography DSL · **68 firework types** · fireworkify any image, SVG, or logo · build your own show.
 
 <img src="assets/hero.gif" alt="pyrojs fireworks show" width="600" />
 
@@ -32,14 +32,14 @@ That's the whole thing. One component, a full-screen show. Read on for the parts
 - **Fast.** A Structure-of-Arrays particle engine on typed arrays with swap-remove and object pooling — thousands of particles at 60fps with zero per-frame allocation.
 - **Effect-TS to the core.** Config is validated with `Schema`, failures are typed `Data.TaggedError` channels, and the engine lifecycle (canvas, RAF loop, autopilot) is a `Scope`-owned program with forked fibers. The hot numeric kernel runs inside a single `Effect.sync` per frame — Effect everywhere it adds value, never in the inner loop where it would cost you frames.
 - **Three layers, one engine.** Drop-in component → imperative handle → declarative show DSL. Use as much as you need.
-- **27 firework types** with real physics — spherical breaks, drooping willows, spiraling pinwheels, mid-air splits, shape bursts, and more.
+- **68 firework types** with real physics — spherical breaks, drooping willows, spiraling pinwheels, mid-air splits, shape bursts, and more.
 - **Fireworkify anything.** Turn an image, SVG, or text into a firework: `fw.launchImage(url)` samples it and the break paints the picture.
 - **Deterministic.** Pass a `seed` and the show is byte-for-byte reproducible (great for tests and recordings).
 - **Tree-shakeable, typed, ESM + CJS.** `effect` is a peer dep; `react` is an optional peer.
 
 > The Effect code scores **100/100** on [agent-doctor](https://github.com/JGalbss/agent-doctor). 🩺
 
-## The firework catalog — all 27
+## The firework catalog — a taste of 68
 
 Each shell has its own physics signature: velocity distribution, drag, gravity,
 trails, twinkle, and (for crossette / pistil / multibreak) **real mid-air splits**
@@ -95,11 +95,11 @@ via secondary spark-shells.
 
 ## Fireworkify any image, SVG, or text
 
-<div align="center"><img src="assets/image.gif" alt="the word PYRO formed from a firework" width="460" /></div>
+<div align="center"><img src="assets/image.gif" alt="company logos fireworkified — Chrome, GitHub, Google, Spotify, React" width="460" /></div>
 
 Hand it a URL (PNG/JPG/SVG), a data URI, or a raw `<svg>` string — pyrojs rasterizes
 it, samples the opaque pixels into colored stars, and launches them so the break
-**paints your picture**. (The "PYRO" above is text rendered to a canvas, then fireworkified.)
+**paints your picture**. Those are real logos above — Chrome, GitHub, Google, Spotify, React — each rasterized, **quantized into color layers** (median-cut, so it reads as posterized regions instead of a muddy gradient), and fireworkified.
 
 ```ts
 import { createFireworks } from "pyrojs"

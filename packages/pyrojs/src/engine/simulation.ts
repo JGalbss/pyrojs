@@ -114,6 +114,7 @@ export class Simulation implements Emitter {
   }
 
   emit(star: StarSpec): void {
+    const target = star.color2 ?? star.color
     this.particles.spawn({
       x: star.x,
       y: star.y,
@@ -125,6 +126,9 @@ export class Simulation implements Emitter {
       r: star.color.r,
       g: star.color.g,
       b: star.color.b,
+      r2: target.r,
+      g2: target.g,
+      b2: target.b,
       flags: star.flags,
       seed: this.rng.next(),
     })

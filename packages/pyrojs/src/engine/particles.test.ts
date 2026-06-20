@@ -13,6 +13,9 @@ const spawnAt = (store: Particles, x: number, y: number): number =>
     r: 255,
     g: 255,
     b: 255,
+    r2: 255,
+    g2: 255,
+    b2: 255,
     flags: ParticleFlag.None,
     seed: 0.5,
   })

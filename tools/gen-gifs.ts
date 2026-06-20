@@ -1,12 +1,13 @@
 import { mkdirSync, writeFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
-import { createCanvas } from "@napi-rs/canvas"
+import { createCanvas, loadImage } from "@napi-rs/canvas"
 import { Effect } from "effect"
 import { Simulation } from "../packages/pyrojs/src/engine/simulation.js"
-import { decodeFireworksConfig, FIREWORK_TYPES } from "../packages/pyrojs/src/core/config.js"
+import { decodeFireworksConfig } from "../packages/pyrojs/src/core/config.js"
 import { palettes } from "../packages/pyrojs/src/engine/palettes.js"
 import { imageEffect, sampleImageData } from "../packages/pyrojs/src/engine/image.js"
+import type { FireworkEffect } from "../packages/pyrojs/src/engine/emitter.js"
 
 import * as gifencNamespace from "gifenc"
 const gifenc = (gifencNamespace as { default?: unknown }).default ?? gifencNamespace
@@ -36,7 +37,11 @@ interface GifOptions {
   readonly drive: (sim: Simulation, frame: number) => void
 }
 
-const makeSim = (width: number, height: number, config: Record<string, unknown>): { sim: Simulation; ctx: Ctx } => {
+const makeSim = (
+  width: number,
+  height: number,
+  config: Record<string, unknown>,
+): { sim: Simulation; ctx: Ctx } => {
   const canvas = createCanvas(width, height)
   const ctx = canvas.getContext("2d") as unknown as Ctx
   const surfaceFactory = ((size: number) => createCanvas(size, size)) as unknown as SurfaceArg
@@ -69,7 +74,9 @@ const renderGif = (options: GifOptions): void => {
   const bytes = gif.bytes()
   writeFileSync(resolve(ASSETS, `${name}.gif`), bytes)
   // eslint-disable-next-line no-console
-  console.log(`✓ assets/${name}.gif  (${width}x${height}, ${frames}f, ${Math.round(bytes.length / 1024)} KB)`)
+  console.log(
+    `✓ assets/${name}.gif  (${width}x${height}, ${frames}f, ${Math.round(bytes.length / 1024)} KB)`,
+  )
 }
 
 // ---- Hero: a busy montage of many types ----
@@ -83,8 +90,8 @@ const HERO_TYPES = [
   "pistil",
   "spinner",
   "kamuro",
-  "heart",
-  "star",
+  "saturn",
+  "butterfly",
   "multibreak",
 ]
 renderGif({
@@ -105,7 +112,8 @@ renderGif({
   },
 })
 
-// ---- One GIF per type for the catalog ----
+// ---- One GIF per type for the README catalog (a curated subset; the live site
+//      shows all 68) ----
 const TYPE_COLORS: Record<string, ReadonlyArray<string>> = {
   willow: palettes.gold,
   kamuro: palettes.gold,
@@ -126,13 +134,45 @@ const TYPE_COLORS: Record<string, ReadonlyArray<string>> = {
   spinner: palettes.neon,
   fish: palettes.aurora,
   chrysanthemum: palettes.aurora,
+  saturn: palettes.ice,
+  butterfly: palettes.rainbow,
   heart: ["#ff2d6b", "#ff7ad9", "#ffd1dc"],
   star: palettes.gold,
 }
-
 const colorsFor = (type: string): ReadonlyArray<string> => TYPE_COLORS[type] ?? palettes.rainbow
 
-for (const type of FIREWORK_TYPES) {
+const GALLERY = [
+  "peony",
+  "chrysanthemum",
+  "dahlia",
+  "willow",
+  "kamuro",
+  "brocade",
+  "palm",
+  "horsetail",
+  "tail",
+  "ring",
+  "saturn",
+  "pearls",
+  "spider",
+  "crossette",
+  "pistil",
+  "multibreak",
+  "strobe",
+  "flitter",
+  "glitter",
+  "comet",
+  "fish",
+  "bees",
+  "spinner",
+  "fountain",
+  "salute",
+  "heart",
+  "star",
+  "butterfly",
+  "burst",
+]
+for (const type of GALLERY) {
   renderGif({
     name: `type-${type}`,
     width: 300,
@@ -149,36 +189,38 @@ for (const type of FIREWORK_TYPES) {
   })
 }
 
-// ---- Image fireworkify: the word "PYRO" forming from a colored break ----
-const textPoints = (): ReadonlyArray<{ x: number; y: number; color: { r: number; g: number; b: number } }> => {
-  const w = 260
-  const h = 90
-  const canvas = createCanvas(w, h)
-  const ctx = canvas.getContext("2d") as unknown as Ctx
-  const gradient = ctx.createLinearGradient(0, 0, w, 0)
-  gradient.addColorStop(0, "#ffd700")
-  gradient.addColorStop(0.5, "#ff4da6")
-  gradient.addColorStop(1, "#4dd2ff")
-  ctx.fillStyle = gradient
-  ctx.font = "bold 70px sans-serif"
-  ctx.textAlign = "center"
-  ctx.textBaseline = "middle"
-  ctx.fillText("PYRO", w / 2, h / 2)
-  const { data } = ctx.getImageData(0, 0, w, h)
-  return sampleImageData(data, w, h, { maxPoints: 480 })
+// ---- Image fireworkify: real company logos forming from quantized breaks ----
+const logoEffect = async (file: string, size: number): Promise<FireworkEffect> => {
+  const img = await loadImage(resolve(ROOT, "tools/logos", file))
+  const scale = size / Math.max(img.width, img.height)
+  const w = Math.max(1, Math.round(img.width * scale))
+  const h = Math.max(1, Math.round(img.height * scale))
+  const c = createCanvas(w, h)
+  const x = c.getContext("2d")
+  x.drawImage(img, 0, 0, w, h)
+  const { data } = x.getImageData(0, 0, w, h)
+  const points = sampleImageData(data as unknown as Uint8ClampedArray, w, h, {
+    maxPoints: 720,
+    colors: 8,
+  })
+  return imageEffect(points)
 }
 
-const points = textPoints()
-const imageFx = imageEffect(points)
+const LOGOS = ["chrome.svg", "github-icon.svg", "google.svg", "spotify.svg", "react.svg"]
+const logoFx: Array<FireworkEffect> = []
+for (const file of LOGOS) logoFx.push(await logoEffect(file, 92))
+
+const LOGO_INTERVAL = 38
 renderGif({
   name: "image",
-  width: 460,
-  height: 220,
-  frames: 70,
+  width: 500,
+  height: 300,
+  frames: LOGOS.length * LOGO_INTERVAL,
   fps: 25,
   config: { intensity: "normal" },
   drive: (sim, frame) => {
-    if (frame !== 4 && frame !== 40) return
-    sim.launchEffect(imageFx, 0.5, 0.5, { count: points.length, power: 1.1, life: 2 }, false)
+    if (frame % LOGO_INTERVAL !== 0) return
+    const i = Math.floor(frame / LOGO_INTERVAL) % logoFx.length
+    sim.launchEffect(logoFx[i], 0.5, 0.5, { count: 720, power: 1, life: 2.4 }, false)
   },
 })

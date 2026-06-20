@@ -18,7 +18,7 @@ export {
 } from "./core/runtime.js"
 
 // ---- Fireworkify images & SVGs ----
-export { sampleImage, sampleImageData, imageEffect } from "./engine/image.js"
+export { sampleImage, sampleImageData, imageEffect, quantizeColors } from "./engine/image.js"
 export type { ImagePoint, SampleImageOptions, ImageEffectOptions } from "./engine/image.js"
 
 // ---- Effect-native engine ----
@@ -60,6 +60,9 @@ export {
   ShowError,
   type PyroError,
 } from "./core/errors.js"
+
+// ---- Categories (for type pickers / showcases) ----
+export { FIREWORK_CATEGORIES, type FireworkCategory } from "./core/categories.js"
 
 // ---- Presets & palettes ----
 export { presets, type PresetName } from "./core/presets.js"

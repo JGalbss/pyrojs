@@ -53,7 +53,7 @@ const Hero = ({ onCelebrate }: { onCelebrate: () => void }) => (
         A fireworks engine for the web. Like react-confetti, but fireworks.
       </p>
       <p className="mx-auto mt-3 max-w-xl text-sm text-white/45">
-        Tiny, fast, Effect-TS to the core. 18 firework types, a one-line React overlay, and a
+        Tiny, fast, Effect-TS to the core. 68 firework types, a one-line React overlay, and a
         choreography DSL for building your own show.
       </p>
 
@@ -150,7 +150,7 @@ const features = [
     body: "Structure-of-Arrays typed-array engine. 50,000 particles step in ~0.8ms — the whole frame budget is left for the GPU.",
   },
   {
-    title: "27 firework types",
+    title: "68 firework types",
     body: "Peony, willow, kamuro, crossette, pistil, spinner, multibreak, comet, pearls… plus shape bursts and image fireworkify.",
   },
   {

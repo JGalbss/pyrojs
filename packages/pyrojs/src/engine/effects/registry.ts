@@ -25,6 +25,36 @@ import {
   spinner,
   tail,
 } from "./advanced.js"
+import { bouquet, coconut, diadem, fallingleaves, nishiki, saturn } from "./aerial2.js"
+import { crackle, cracklingrain, dragoneggs, timerain } from "./crackle.js"
+import { bowtie, butterfly, maple, smiley, snail } from "./patterns.js"
+import {
+  girandola,
+  helicopter,
+  hummer,
+  parachute,
+  pinwheel,
+  serpent,
+  tourbillion,
+  wheel,
+} from "./motion.js"
+import {
+  chaser,
+  conefountain,
+  firecracker,
+  groundbloom,
+  jumpingjack,
+  mine,
+  partypopper,
+  romancandle,
+  smoke,
+  snake,
+  snapper,
+  sparkler,
+  tank,
+  waterfall,
+} from "./ground.js"
+import { colorchange, flash, ghost, report } from "./special.js"
 
 // The single source of truth mapping a firework type name to its break pattern.
 // A total Record means adding a name to `FIREWORK_TYPES` forces an entry here.
@@ -56,6 +86,47 @@ export const effectRegistry: Record<FireworkType, FireworkEffect> = {
   kamuro,
   flitter,
   multibreak,
+  nishiki,
+  coconut,
+  saturn,
+  diadem,
+  bouquet,
+  fallingleaves,
+  crackle,
+  dragoneggs,
+  timerain,
+  cracklingrain,
+  smiley,
+  butterfly,
+  maple,
+  bowtie,
+  snail,
+  tourbillion,
+  serpent,
+  hummer,
+  helicopter,
+  girandola,
+  wheel,
+  pinwheel,
+  parachute,
+  conefountain,
+  mine,
+  groundbloom,
+  sparkler,
+  firecracker,
+  chaser,
+  jumpingjack,
+  romancandle,
+  waterfall,
+  smoke,
+  snake,
+  snapper,
+  partypopper,
+  tank,
+  report,
+  flash,
+  colorchange,
+  ghost,
 }
 
 export const getEffect = (type: FireworkType): FireworkEffect => effectRegistry[type]
