@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { Fireworks } from "pyrojs/react"
-import { palettes } from "pyrojs"
+import { Fireworks } from "@jgalbsss/pyrojs/react"
+import { palettes } from "@jgalbsss/pyrojs"
 import { FireworksCanvas } from "./components/FireworksCanvas.js"
 import { CodeBlock } from "./components/CodeBlock.js"
 import { Playground } from "./sections/Playground.js"
@@ -82,11 +82,11 @@ const Hero = ({ onCelebrate }: { onCelebrate: () => void }) => (
 )
 
 const tabs = {
-  React: `import { Fireworks } from "pyrojs/react"
+  React: `import { Fireworks } from "@jgalbsss/pyrojs/react"
 
 // One line. A full-screen overlay over your whole page.
 export const App = () => <Fireworks intensity="energetic" />`,
-  Vanilla: `import { createFireworks, palettes } from "pyrojs"
+  Vanilla: `import { createFireworks, palettes } from "@jgalbsss/pyrojs"
 
 const fw = createFireworks(canvas, {
   intensity: "energetic",
@@ -95,7 +95,7 @@ const fw = createFireworks(canvas, {
 
 fw.launch({ type: "willow", x: 0.5, y: 0.3 })
 fw.finale({ durationMs: 8000 })`,
-  Show: `import { timeline, at, salvo, peony, finale, playShow } from "pyrojs/show"
+  Show: `import { timeline, at, salvo, peony, finale, playShow } from "@jgalbsss/pyrojs/show"
 
 const show = timeline(
   at("0s", salvo(3, peony())),

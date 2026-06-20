@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm --filter pyrojs build && vite build",
+    "build": "pnpm --filter @jgalbsss/pyrojs build && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "effect": "^3.21.0",
-    "pyrojs": "workspace:*",
+    "@jgalbsss/pyrojs": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

@@ -1,7 +1,7 @@
 import { useRef } from "react"
 import { Effect } from "effect"
-import type { FireworksConfigInput, FireworksHandle } from "pyrojs"
-import { palettes } from "pyrojs"
+import type { FireworksConfigInput, FireworksHandle } from "@jgalbsss/pyrojs"
+import { palettes } from "@jgalbsss/pyrojs"
 import {
   at,
   finale,
@@ -13,7 +13,7 @@ import {
   salvo,
   timeline,
   willow,
-} from "pyrojs/show"
+} from "@jgalbsss/pyrojs/show"
 import { FireworksCanvas } from "../components/FireworksCanvas.js"
 import { Hud } from "../components/Hud.js"
 import { CodeBlock } from "../components/CodeBlock.js"
@@ -32,8 +32,8 @@ const demoShow = timeline(
   at("5s", finale({ durationMs: 6000 })),
 )
 
-const showCode = `import { timeline, at, salvo, fire, finale } from "pyrojs/show"
-import { peony, willow, heart, ring } from "pyrojs/show"
+const showCode = `import { timeline, at, salvo, fire, finale } from "@jgalbsss/pyrojs/show"
+import { peony, willow, heart, ring } from "@jgalbsss/pyrojs/show"
 
 const show = timeline(
   at("0s",   salvo(3, peony({ colors: palettes.gold }))),

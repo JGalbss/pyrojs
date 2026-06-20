@@ -13,11 +13,11 @@ Tiny, fast, framework-agnostic core · React bindings · an Effect-TS choreograp
 ---
 
 ```bash
-npm i pyrojs
+npm i @jgalbsss/pyrojs
 ```
 
 ```tsx
-import { Fireworks } from "pyrojs/react"
+import { Fireworks } from "@jgalbsss/pyrojs/react"
 
 export const App = () => <Fireworks intensity="energetic" />
 ```
@@ -102,7 +102,7 @@ it, samples the opaque pixels into colored stars, and launches them so the break
 **paints your picture**. Those are real logos above — Chrome, GitHub, Google, Spotify, React — each rasterized, **quantized into color layers** (median-cut, so it reads as posterized regions instead of a muddy gradient), and fireworkified.
 
 ```ts
-import { createFireworks } from "pyrojs"
+import { createFireworks } from "@jgalbsss/pyrojs"
 
 const fw = createFireworks(canvas)
 await fw.launchImage("/logo.svg", { x: 0.5, y: 0.5 })
@@ -117,14 +117,14 @@ you can fire with `fw.launchEffect(effect)` or schedule in a show.
 ### 1. React — drop-in overlay
 
 ```tsx
-import { Fireworks } from "pyrojs/react"
+import { Fireworks } from "@jgalbsss/pyrojs/react"
 
 // Autopilot full-screen show
 <Fireworks intensity="insane" colors={["#ffd700", "#ff4d4d", "#4dd2ff"]} />
 
 // Pause/resume with `run`, and grab a handle to fire your own
 import { useRef } from "react"
-import type { FireworksHandle } from "pyrojs"
+import type { FireworksHandle } from "@jgalbsss/pyrojs"
 
 const handle = useRef<FireworksHandle>(null)
 <button onClick={() => handle.current?.launch({ type: "heart" })}>❤️</button>
@@ -135,7 +135,7 @@ Or bind your own canvas with the hook:
 
 ```tsx
 import { useRef } from "react"
-import { useFireworks } from "pyrojs/react"
+import { useFireworks } from "@jgalbsss/pyrojs/react"
 
 const canvasRef = useRef<HTMLCanvasElement>(null)
 const fw = useFireworks(canvasRef, { colors: ["#fff"] })
@@ -146,7 +146,7 @@ return <canvas ref={canvasRef} style={{ width: "100%", height: 400 }} />
 ### 2. Vanilla — imperative handle
 
 ```ts
-import { createFireworks, palettes } from "pyrojs"
+import { createFireworks, palettes } from "@jgalbsss/pyrojs"
 
 const fw = createFireworks(canvas, { intensity: "energetic", colors: palettes.gold })
 
@@ -159,12 +159,12 @@ fw.destroy()                                     // releases canvas, fibers, obs
 
 ### 3. Effect — compose a choreographed show
 
-`pyrojs/show` is a small declarative DSL that compiles to scheduled launches using Effect's `Schedule` and structured concurrency.
+`@jgalbsss/pyrojs/show` is a small declarative DSL that compiles to scheduled launches using Effect's `Schedule` and structured concurrency.
 
 ```ts
-import { timeline, at, salvo, fire, finale, peony, willow, heart, ring } from "pyrojs/show"
-import { playShow } from "pyrojs/show"
-import { palettes } from "pyrojs"
+import { timeline, at, salvo, fire, finale, peony, willow, heart, ring } from "@jgalbsss/pyrojs/show"
+import { playShow } from "@jgalbsss/pyrojs/show"
+import { palettes } from "@jgalbsss/pyrojs"
 
 const grandFinale = timeline(
   at("0s", salvo(3, peony({ colors: palettes.gold }))),
@@ -181,8 +181,8 @@ Prefer the Effect-native engine? `makeEngine` returns an `Effect` requiring a `S
 
 ```ts
 import { Effect } from "effect"
-import { makeEngine } from "pyrojs"
-import { runShow, timeline, at, peony } from "pyrojs/show"
+import { makeEngine } from "@jgalbsss/pyrojs"
+import { runShow, timeline, at, peony } from "@jgalbsss/pyrojs/show"
 
 const program = Effect.gen(function* () {
   const engine = yield* makeEngine(canvas, { autoplay: false })
@@ -234,9 +234,9 @@ Everything below is optional with sensible defaults; all of it is validated by `
 | `pauseWhenHidden` | `boolean` | `true` | Page Visibility API |
 | `respectReducedMotion` | `boolean` | `true` | |
 
-Palettes (`import { palettes } from "pyrojs"`): `gold`, `silver`, `rainbow`, `sunset`, `ice`, `ember`, `neon`, `pastel`, `patriotic`, `emerald`, `hot`, `aurora`.
+Palettes (`import { palettes } from "@jgalbsss/pyrojs"`): `gold`, `silver`, `rainbow`, `sunset`, `ice`, `ember`, `neon`, `pastel`, `patriotic`, `emerald`, `hot`, `aurora`.
 
-Presets (`import { presets } from "pyrojs"`): `finale`, `newYear`, `subtle`, `birthday`, `diwali`.
+Presets (`import { presets } from "@jgalbsss/pyrojs"`): `finale`, `newYear`, `subtle`, `birthday`, `diwali`.
 
 ## Performance
 

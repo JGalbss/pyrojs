@@ -24,13 +24,13 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Build library
-        run: pnpm --filter pyrojs build
+        run: pnpm --filter @jgalbsss/pyrojs build
 
       - name: Typecheck
         run: pnpm -r typecheck
 
       - name: Test
-        run: pnpm --filter pyrojs test
+        run: pnpm --filter @jgalbsss/pyrojs test
 
       - name: Build docs
         run: pnpm --filter @pyro/docs build

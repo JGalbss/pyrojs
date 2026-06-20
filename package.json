@@ -9,10 +9,10 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "pnpm --filter pyrojs build",
-    "dev": "pnpm --filter pyrojs dev",
+    "build": "pnpm --filter @jgalbsss/pyrojs build",
+    "dev": "pnpm --filter @jgalbsss/pyrojs dev",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm --filter pyrojs test",
+    "test": "pnpm --filter @jgalbsss/pyrojs test",
     "docs:dev": "pnpm --filter @pyro/docs dev",
     "docs:build": "pnpm --filter @pyro/docs build",
     "doctor": "bash scripts/doctor.sh",

@@ -23,12 +23,12 @@ importers:
 
   apps/docs:
     dependencies:
+      '@jgalbsss/pyrojs':
+        specifier: workspace:*
+        version: link:../../packages/pyrojs
       effect:
         specifier: ^3.21.0
         version: 3.21.4
-      pyrojs:
-        specifier: workspace:*
-        version: link:../../packages/pyrojs
       react:
         specifier: ^19.0.0
         version: 19.2.7

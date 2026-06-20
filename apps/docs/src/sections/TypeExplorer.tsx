@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
-import type { FireworkType, FireworksConfigInput, FireworksHandle } from "pyrojs"
-import { FIREWORK_TYPES } from "pyrojs"
+import type { FireworkType, FireworksConfigInput, FireworksHandle } from "@jgalbsss/pyrojs"
+import { FIREWORK_TYPES } from "@jgalbsss/pyrojs"
 import { FireworksCanvas } from "../components/FireworksCanvas.js"
 import { Hud } from "../components/Hud.js"
 

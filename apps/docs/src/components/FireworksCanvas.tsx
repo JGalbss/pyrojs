@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 import type { CSSProperties, RefObject } from "react"
-import { useFireworks } from "pyrojs/react"
-import type { FireworksConfigInput, FireworksHandle } from "pyrojs"
+import { useFireworks } from "@jgalbsss/pyrojs/react"
+import type { FireworksConfigInput, FireworksHandle } from "@jgalbsss/pyrojs"
 
 interface FireworksCanvasProps {
   config?: FireworksConfigInput

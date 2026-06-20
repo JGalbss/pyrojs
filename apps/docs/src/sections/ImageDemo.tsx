@@ -1,6 +1,6 @@
 import { useRef, useState } from "react"
-import type { FireworksConfigInput, FireworksHandle, ImagePoint } from "pyrojs"
-import { imageEffect, sampleImageData } from "pyrojs"
+import type { FireworksConfigInput, FireworksHandle, ImagePoint } from "@jgalbsss/pyrojs"
+import { imageEffect, sampleImageData } from "@jgalbsss/pyrojs"
 import { FireworksCanvas } from "../components/FireworksCanvas.js"
 import { Hud } from "../components/Hud.js"
 import { CodeBlock } from "../components/CodeBlock.js"
@@ -11,7 +11,7 @@ const demoConfig: FireworksConfigInput = {
   trail: 0.87,
 }
 
-const code = `import { createFireworks } from "pyrojs"
+const code = `import { createFireworks } from "@jgalbsss/pyrojs"
 
 const fw = createFireworks(canvas)
 

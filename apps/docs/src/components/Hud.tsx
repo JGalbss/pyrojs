@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import type { RefObject } from "react"
-import type { EngineStats, FireworksHandle } from "pyrojs"
+import type { EngineStats, FireworksHandle } from "@jgalbsss/pyrojs"
 
 /** Live FPS + particle-count readout for a fireworks demo. */
 export const Hud = ({ handleRef }: { handleRef: RefObject<FireworksHandle | null> }) => {

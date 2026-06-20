@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react"
-import type { FireworksConfigInput, FireworksHandle, Intensity } from "pyrojs"
-import { INTENSITIES, palettes } from "pyrojs"
+import type { FireworksConfigInput, FireworksHandle, Intensity } from "@jgalbsss/pyrojs"
+import { INTENSITIES, palettes } from "@jgalbsss/pyrojs"
 import { FireworksCanvas } from "../components/FireworksCanvas.js"
 import { Hud } from "../components/Hud.js"
 import { CodeBlock } from "../components/CodeBlock.js"
@@ -19,8 +19,8 @@ const buildCode = (
   trail: number,
   gravity: number,
 ): string =>
-  `import { Fireworks } from "pyrojs/react"
-import { palettes } from "pyrojs"
+  `import { Fireworks } from "@jgalbsss/pyrojs/react"
+import { palettes } from "@jgalbsss/pyrojs"
 
 <Fireworks
   intensity="${intensity}"
