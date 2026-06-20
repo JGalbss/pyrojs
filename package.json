@@ -1,0 +1,41 @@
+{
+  "name": "pyro-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Pyro — a fireworks engine for the web. Monorepo root.",
+  "packageManager": "pnpm@10.28.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm --filter pyrojs build",
+    "dev": "pnpm --filter pyrojs dev",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm --filter pyrojs test",
+    "docs:dev": "pnpm --filter @pyro/docs dev",
+    "docs:build": "pnpm --filter @pyro/docs build",
+    "doctor": "bash scripts/doctor.sh",
+    "gifs": "tsx tools/gen-gifs.ts",
+    "clean": "pnpm -r exec rm -rf dist node_modules .turbo && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^1.0.0",
+    "effect": "^3.21.0",
+    "gifenc": "^1.0.3",
+    "tsx": "^4.19.0"
+  },
+  "keywords": [
+    "fireworks",
+    "particles",
+    "canvas",
+    "confetti",
+    "animation",
+    "effect-ts"
+  ],
+  "author": "JGalbss",
+  "license": "MIT",
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "name": "pyrojs",
+  "version": "0.1.0",
+  "description": "A fireworks engine for the web — like react-confetti, but for fireworks. Tiny, fast, framework-agnostic core with React bindings and an optional Effect-TS choreography DSL.",
+  "type": "module",
+  "license": "MIT",
+  "author": "JGalbss",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JGalbss/fireworks.git"
+  },
+  "homepage": "https://github.com/JGalbss/fireworks#readme",
+  "bugs": {
+    "url": "https://github.com/JGalbss/fireworks/issues"
+  },
+  "keywords": [
+    "fireworks",
+    "particles",
+    "particle-system",
+    "canvas",
+    "confetti",
+    "react-confetti",
+    "animation",
+    "celebration",
+    "effect-ts",
+    "react"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "require": "./dist/react.cjs"
+    },
+    "./show": {
+      "types": "./dist/show.d.ts",
+      "import": "./dist/show.js",
+      "require": "./dist/show.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:cov": "vitest run --coverage",
+    "prepublishOnly": "pnpm run build"
+  },
+  "peerDependencies": {
+    "effect": ">=3.10.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "effect": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitest/coverage-v8": "^4.1.0",
+    "effect": "^3.21.0",
+    "happy-dom": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
