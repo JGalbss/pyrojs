@@ -11,6 +11,11 @@ build/
 apps/docs/dist/
 apps/docs/.vite/
 
+# next.js
+.next/
+apps/web/.next/
+next-env.d.ts
+
 # logs
 *.log
 npm-debug.log*
