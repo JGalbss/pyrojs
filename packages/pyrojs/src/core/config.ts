@@ -29,6 +29,15 @@ export const FIREWORK_TYPES = [
   "star",
   "burst",
   "glitter",
+  "pistil",
+  "bees",
+  "spinner",
+  "fish",
+  "tail",
+  "pearls",
+  "kamuro",
+  "flitter",
+  "multibreak",
 ] as const
 
 export type FireworkType = (typeof FIREWORK_TYPES)[number]
@@ -93,11 +102,13 @@ export const FireworksConfigSchema = Schema.Struct({
   /** Delay between autopilot launches (ms), fixed or [min, max]. */
   launchInterval: Schema.optionalWith(Interval, { default: (): Interval => [600, 1400] }),
   /** Which firework types the autopilot draws from. */
-  types: Schema.optionalWith(Schema.Array(FireworkTypeName), {
+  types: Schema.optionalWith(Schema.Array(FireworkTypeName).pipe(Schema.minItems(1)), {
     default: () => DEFAULT_AUTOPLAY_TYPES,
   }),
   /** Palette the autopilot draws from. Use the exported palettes or your own. */
-  colors: Schema.optionalWith(Schema.Array(ColorString), { default: () => DEFAULT_COLORS }),
+  colors: Schema.optionalWith(Schema.Array(ColorString).pipe(Schema.minItems(1)), {
+    default: () => DEFAULT_COLORS,
+  }),
   /** Downward acceleration in px/s². */
   gravity: Schema.optionalWith(Schema.Number, { default: () => 60 }),
   /** Horizontal acceleration in px/s². */
@@ -145,7 +156,7 @@ export const LaunchSpecSchema = Schema.Struct({
   /** Burst origin Y in normalized [0,1] canvas space. Omit to randomize. */
   y: Schema.optional(Unit),
   /** Override colors for this shell. */
-  colors: Schema.optional(Schema.Array(ColorString)),
+  colors: Schema.optional(Schema.Array(ColorString).pipe(Schema.minItems(1))),
   /** Number of stars in the break. */
   count: Schema.optional(PositiveInt),
   /** Burst energy multiplier (spread radius / velocity). */

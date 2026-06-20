@@ -69,7 +69,10 @@ export const Fireworks = (props: FireworksProps): ReactElement => {
   useEffect(() => {
     if (handleRef === undefined) return
     handleRef.current = internalHandle.current
-  })
+    return () => {
+      handleRef.current = null
+    }
+  }, [handleRef, internalHandle])
 
   useEffect(() => {
     const handle = internalHandle.current

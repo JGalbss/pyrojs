@@ -4,7 +4,7 @@
 
 ### A fireworks engine for the web — like react-confetti, but fireworks.
 
-Tiny, fast, framework-agnostic core · React bindings · an Effect-TS choreography DSL · 18 firework types · build your own show.
+Tiny, fast, framework-agnostic core · React bindings · an Effect-TS choreography DSL · **27 firework types** · fireworkify any image · build your own show.
 
 <img src="assets/hero.gif" alt="pyrojs fireworks show" width="600" />
 
@@ -32,33 +32,85 @@ That's the whole thing. One component, a full-screen show. Read on for the parts
 - **Fast.** A Structure-of-Arrays particle engine on typed arrays with swap-remove and object pooling — thousands of particles at 60fps with zero per-frame allocation.
 - **Effect-TS to the core.** Config is validated with `Schema`, failures are typed `Data.TaggedError` channels, and the engine lifecycle (canvas, RAF loop, autopilot) is a `Scope`-owned program with forked fibers. The hot numeric kernel runs inside a single `Effect.sync` per frame — Effect everywhere it adds value, never in the inner loop where it would cost you frames.
 - **Three layers, one engine.** Drop-in component → imperative handle → declarative show DSL. Use as much as you need.
-- **18 firework types** out of the box, plus shape bursts (hearts, stars).
+- **27 firework types** with real physics — spherical breaks, drooping willows, spiraling pinwheels, mid-air splits, shape bursts, and more.
+- **Fireworkify anything.** Turn an image, SVG, or text into a firework: `fw.launchImage(url)` samples it and the break paints the picture.
 - **Deterministic.** Pass a `seed` and the show is byte-for-byte reproducible (great for tests and recordings).
-- **Tree-shakeable, typed, ESM + CJS.** `react` and `effect` are optional peers.
+- **Tree-shakeable, typed, ESM + CJS.** `effect` is a peer dep; `react` is an optional peer.
 
 > The Effect code scores **100/100** on [agent-doctor](https://github.com/JGalbss/agent-doctor). 🩺
 
-## The firework catalog
+## The firework catalog — all 27
+
+Each shell has its own physics signature: velocity distribution, drag, gravity,
+trails, twinkle, and (for crossette / pistil / multibreak) **real mid-air splits**
+via secondary spark-shells.
 
 <table>
   <tr>
-    <td align="center"><img src="assets/type-peony.gif" width="200"/><br/><b>peony</b></td>
-    <td align="center"><img src="assets/type-chrysanthemum.gif" width="200"/><br/><b>chrysanthemum</b></td>
-    <td align="center"><img src="assets/type-willow.gif" width="200"/><br/><b>willow</b></td>
+    <td align="center"><img src="assets/type-peony.gif" width="230"/><br/><b>peony</b><br/><sub>classic round break</sub></td>
+    <td align="center"><img src="assets/type-chrysanthemum.gif" width="230"/><br/><b>chrysanthemum</b><br/><sub>peony with trails</sub></td>
+    <td align="center"><img src="assets/type-dahlia.gif" width="230"/><br/><b>dahlia</b><br/><sub>fewer, bigger, faster</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="assets/type-crossette.gif" width="200"/><br/><b>crossette</b></td>
-    <td align="center"><img src="assets/type-ring.gif" width="200"/><br/><b>ring</b></td>
-    <td align="center"><img src="assets/type-palm.gif" width="200"/><br/><b>palm</b></td>
+    <td align="center"><img src="assets/type-willow.gif" width="230"/><br/><b>willow</b><br/><sub>long drooping tendrils</sub></td>
+    <td align="center"><img src="assets/type-kamuro.gif" width="230"/><br/><b>kamuro</b><br/><sub>dense, long-hanging gold</sub></td>
+    <td align="center"><img src="assets/type-brocade.gif" width="230"/><br/><b>brocade</b><br/><sub>glittering crown</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="assets/type-heart.gif" width="200"/><br/><b>heart</b></td>
-    <td align="center"><img src="assets/type-strobe.gif" width="200"/><br/><b>strobe</b></td>
-    <td align="center"><sub>…and dahlia, brocade, comet, spider,<br/>horsetail, salute, fountain, star, glitter, burst</sub></td>
+    <td align="center"><img src="assets/type-palm.gif" width="230"/><br/><b>palm</b><br/><sub>thick arcing fronds</sub></td>
+    <td align="center"><img src="assets/type-horsetail.gif" width="230"/><br/><b>horsetail</b><br/><sub>downward waterfall</sub></td>
+    <td align="center"><img src="assets/type-tail.gif" width="230"/><br/><b>tail</b><br/><sub>rising arcing tails</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/type-ring.gif" width="230"/><br/><b>ring</b><br/><sub>flat expanding circle</sub></td>
+    <td align="center"><img src="assets/type-pearls.gif" width="230"/><br/><b>pearls</b><br/><sub>evenly-spaced orbs</sub></td>
+    <td align="center"><img src="assets/type-spider.gif" width="230"/><br/><b>spider</b><br/><sub>straight thin legs</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/type-crossette.gif" width="230"/><br/><b>crossette</b><br/><sub>splits into crosses</sub></td>
+    <td align="center"><img src="assets/type-pistil.gif" width="230"/><br/><b>pistil</b><br/><sub>core inside a break</sub></td>
+    <td align="center"><img src="assets/type-multibreak.gif" width="230"/><br/><b>multibreak</b><br/><sub>shell of sub-shells</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/type-strobe.gif" width="230"/><br/><b>strobe</b><br/><sub>flickering stars</sub></td>
+    <td align="center"><img src="assets/type-flitter.gif" width="230"/><br/><b>flitter</b><br/><sub>dense crackle</sub></td>
+    <td align="center"><img src="assets/type-glitter.gif" width="230"/><br/><b>glitter</b><br/><sub>soft sparkle cloud</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/type-comet.gif" width="230"/><br/><b>comet</b><br/><sub>fast bright streaks</sub></td>
+    <td align="center"><img src="assets/type-fish.gif" width="230"/><br/><b>fish</b><br/><sub>darting swimmers</sub></td>
+    <td align="center"><img src="assets/type-bees.gif" width="230"/><br/><b>bees</b><br/><sub>erratic buzzing</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/type-spinner.gif" width="230"/><br/><b>spinner</b><br/><sub>spiral pinwheel</sub></td>
+    <td align="center"><img src="assets/type-fountain.gif" width="230"/><br/><b>fountain</b><br/><sub>upward gerb cone</sub></td>
+    <td align="center"><img src="assets/type-salute.gif" width="230"/><br/><b>salute</b><br/><sub>hard bright flash</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/type-heart.gif" width="230"/><br/><b>heart</b><br/><sub>shape burst</sub></td>
+    <td align="center"><img src="assets/type-star.gif" width="230"/><br/><b>star</b><br/><sub>shape burst</sub></td>
+    <td align="center"><img src="assets/type-burst.gif" width="230"/><br/><b>burst</b><br/><sub>the simplest one</sub></td>
   </tr>
 </table>
 
-Full list: `peony`, `chrysanthemum`, `willow`, `palm`, `ring`, `crossette`, `strobe`, `brocade`, `comet`, `spider`, `dahlia`, `horsetail`, `salute`, `fountain`, `heart`, `star`, `burst`, `glitter`.
+## Fireworkify any image, SVG, or text
+
+<div align="center"><img src="assets/image.gif" alt="the word PYRO formed from a firework" width="460" /></div>
+
+Hand it a URL (PNG/JPG/SVG), a data URI, or a raw `<svg>` string — pyrojs rasterizes
+it, samples the opaque pixels into colored stars, and launches them so the break
+**paints your picture**. (The "PYRO" above is text rendered to a canvas, then fireworkified.)
+
+```ts
+import { createFireworks } from "pyrojs"
+
+const fw = createFireworks(canvas)
+await fw.launchImage("/logo.svg", { x: 0.5, y: 0.5 })
+await fw.launchImage("https://example.com/cat.png", { resolution: 80, maxPoints: 900 })
+```
+
+Need the pieces? `sampleImage(url)` → points, `imageEffect(points)` → a `FireworkEffect`
+you can fire with `fw.launchEffect(effect)` or schedule in a show.
 
 ## Three ways to use it
 

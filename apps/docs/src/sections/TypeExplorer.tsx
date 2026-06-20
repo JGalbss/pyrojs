@@ -36,7 +36,7 @@ export const TypeExplorer = () => {
 
   return (
     <section id="catalog" className="mx-auto max-w-6xl px-6 py-24">
-      <h2 className="text-3xl font-bold sm:text-4xl">18 firework types</h2>
+      <h2 className="text-3xl font-bold sm:text-4xl">27 firework types</h2>
       <p className="mt-2 max-w-2xl text-white/60">
         Each shell rises and breaks with its own physics signature. Click one to see it live.
       </p>

@@ -10,7 +10,16 @@
 // lifecycle). The per-frame particle kernel is plain typed-array TS for speed.
 
 // ---- Easy / imperative API ----
-export { createFireworks, type FireworksHandle } from "./core/runtime.js"
+export {
+  createFireworks,
+  type FireworksHandle,
+  type LaunchEffectOptions,
+  type LaunchImageOptions,
+} from "./core/runtime.js"
+
+// ---- Fireworkify images & SVGs ----
+export { sampleImage, sampleImageData, imageEffect } from "./engine/image.js"
+export type { ImagePoint, SampleImageOptions, ImageEffectOptions } from "./engine/image.js"
 
 // ---- Effect-native engine ----
 export {
@@ -58,7 +67,13 @@ export { palettes, type PaletteName } from "./engine/palettes.js"
 
 // ---- Effect catalog (compose your own firework types) ----
 export { effectRegistry, getEffect } from "./engine/effects/registry.js"
-export type { FireworkEffect, BurstContext, Emitter, StarSpec } from "./engine/emitter.js"
+export type {
+  FireworkEffect,
+  BurstContext,
+  Emitter,
+  StarSpec,
+  SubShellSpec,
+} from "./engine/emitter.js"
 export { pickColor, jitter } from "./engine/emitter.js"
 
 // ---- Color utilities ----
@@ -83,6 +98,6 @@ export {
   type Renderer,
   type RenderOptions,
 } from "./engine/renderer.js"
-export { Simulation, type SimStats } from "./engine/simulation.js"
+export { Simulation, type SimStats, type BurstOverrides } from "./engine/simulation.js"
 export { Random, createRandom } from "./engine/math/rng.js"
 export { easings, applyEasing, type EasingName, type EasingFn } from "./engine/math/easing.js"

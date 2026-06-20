@@ -33,7 +33,7 @@ export interface Renderer {
   readonly height: number
   resize(width: number, height: number, dpr: number): void
   configure(options: RenderOptions): void
-  beginFrame(): void
+  beginFrame(dt: number): void
   drawParticles(particles: Particles, timeSeconds: number): void
   dispose(): void
 }
@@ -97,10 +97,10 @@ export class CanvasRenderer implements Renderer {
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   }
 
-  beginFrame(): void {
+  beginFrame(dt: number): void {
     const ctx = this.ctx
     ctx.setTransform(dpr1(this.dpr), 0, 0, dpr1(this.dpr), 0, 0)
-    const fade = frameFade(this.options.trail)
+    const fade = frameFade(this.options.trail, dt)
 
     if (fade >= 1) {
       this.clearFull()
@@ -236,11 +236,16 @@ const dpr1 = (dpr: number): number => {
   return 1
 }
 
-// Per-frame fade amount derived from the trail setting. trail=0 → 1 (full clear),
-// trail=1 → 0 (never fade). Clamped so trails always eventually clear.
-const frameFade = (trail: number): number => {
+const REFERENCE_DT = 1 / 60
+
+// Time-based per-frame fade so trail length is the same at any frame rate.
+// `trail` is the retention over one 60fps frame; we rescale it to the actual dt.
+// trail=0 → full clear; floored so trails always eventually clear.
+const frameFade = (trail: number, dt: number): number => {
   if (trail <= 0) return 1
-  return Math.max(1 - trail, 0.03)
+  if (dt <= 0) return 0
+  const retention = Math.pow(trail, dt / REFERENCE_DT)
+  return Math.max(1 - retention, 0.02)
 }
 
 const lifeRatio = (life: number, maxLife: number): number => {

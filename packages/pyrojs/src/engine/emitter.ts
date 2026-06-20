@@ -22,9 +22,34 @@ export interface StarSpec {
   flags: number
 }
 
+/**
+ * A secondary "spark shell": a sub-projectile that flies out, trails, and bursts
+ * into its own break after a fuse. This is what makes multi-stage shells real —
+ * crossette stars that split, pistils, multi-breaks — instead of faked clusters.
+ */
+export interface SubShellSpec {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  /** Seconds until this spark bursts. */
+  fuse: number
+  /** The break pattern it detonates into. */
+  effect: FireworkEffect
+  colors: ReadonlyArray<Rgb>
+  count: number
+  power: number
+  size: number
+  life: number
+  drag: number
+}
+
 export interface Emitter {
   readonly rng: Random
+  /** Emit a single star into the live particle field. */
   emit(star: StarSpec): void
+  /** Launch a secondary spark shell that bursts after its fuse. */
+  shell(spec: SubShellSpec): void
 }
 
 /** Everything an effect needs to lay down a break, already resolved + scaled. */

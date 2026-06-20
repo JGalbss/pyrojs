@@ -6,6 +6,7 @@ import { CodeBlock } from "./components/CodeBlock.js"
 import { Playground } from "./sections/Playground.js"
 import { TypeExplorer } from "./sections/TypeExplorer.js"
 import { ShowDemo } from "./sections/ShowDemo.js"
+import { ImageDemo } from "./sections/ImageDemo.js"
 
 const REPO = "https://github.com/JGalbss/fireworks"
 
@@ -26,6 +27,7 @@ export const App = () => {
       <Quickstart />
       <Playground />
       <TypeExplorer />
+      <ImageDemo />
       <ShowDemo />
       <Features />
       <Footer />
@@ -148,8 +150,8 @@ const features = [
     body: "Structure-of-Arrays typed-array engine. 50,000 particles step in ~0.8ms — the whole frame budget is left for the GPU.",
   },
   {
-    title: "18 firework types",
-    body: "Peony, willow, palm, crossette, ring, brocade, comet, spider, dahlia… plus shape bursts like hearts and stars.",
+    title: "27 firework types",
+    body: "Peony, willow, kamuro, crossette, pistil, spinner, multibreak, comet, pearls… plus shape bursts and image fireworkify.",
   },
   {
     title: "Deterministic",

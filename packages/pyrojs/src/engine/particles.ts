@@ -67,8 +67,10 @@ export class Particles {
   flags: Uint8Array
 
   constructor(initialCapacity: number = DEFAULT_CAPACITY, maxCapacity: number = 200_000) {
-    this.capacity = Math.max(1, initialCapacity)
-    this.maxCapacity = Math.max(this.capacity, maxCapacity)
+    // The ceiling is authoritative: a small maxCapacity clamps the initial
+    // allocation rather than being silently raised to it.
+    this.maxCapacity = Math.max(1, maxCapacity)
+    this.capacity = Math.min(Math.max(1, initialCapacity), this.maxCapacity)
     this.px = new Float32Array(this.capacity)
     this.py = new Float32Array(this.capacity)
     this.vx = new Float32Array(this.capacity)

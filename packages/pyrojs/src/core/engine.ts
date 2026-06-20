@@ -1,5 +1,6 @@
 import { Clock, Duration, Effect, Ref, Schedule, Scope } from "effect"
-import { Simulation } from "../engine/simulation.js"
+import { Simulation, type BurstOverrides } from "../engine/simulation.js"
+import type { FireworkEffect } from "../engine/emitter.js"
 import type { Random } from "../engine/math/rng.js"
 import {
   decodeFireworksConfig,
@@ -39,6 +40,16 @@ export interface FinaleOptions {
 export interface PyroEngine {
   /** Fire a single firework (validated; fails with ConfigError on bad input). */
   readonly launch: (spec?: LaunchSpecInput) => Effect.Effect<void, ConfigError>
+  /** Fire a custom break pattern (e.g. an image burst) at a normalized point. */
+  readonly launchEffect: (
+    effect: FireworkEffect,
+    x: number,
+    y: number,
+    overrides?: BurstOverrides,
+    rise?: boolean,
+  ) => Effect.Effect<void>
+  /** Run a background effect tied to the engine scope (interrupted on teardown). */
+  readonly fork: (effect: Effect.Effect<void, ConfigError>) => Effect.Effect<void>
   /** Resume the render loop and autopilot. */
   readonly start: Effect.Effect<void>
   /** Freeze the render loop (particles stop advancing). */
@@ -147,6 +158,20 @@ export const makeEngine: (
 
     yield* Effect.addFinalizer(() => Effect.sync(() => sim.dispose()))
 
+    // The engine's own scope: background effects (finale, scripted shows) are
+    // forked into it so they are interrupted when the engine is torn down.
+    const scope = yield* Effect.scope
+    const fork = (effect: Effect.Effect<void, ConfigError>): Effect.Effect<void> =>
+      effect.pipe(Effect.forkIn(scope), Effect.asVoid)
+
+    const launchEffect = (
+      effect: FireworkEffect,
+      x: number,
+      y: number,
+      overrides?: BurstOverrides,
+      rise?: boolean,
+    ): Effect.Effect<void> => Effect.sync(() => sim.launchEffect(effect, x, y, overrides, rise))
+
     const launch = (specInput?: LaunchSpecInput): Effect.Effect<void, ConfigError> =>
       decodeLaunchSpec(specInput).pipe(
         Effect.flatMap((spec) => Effect.sync(() => sim.launch(spec))),
@@ -191,6 +216,8 @@ export const makeEngine: (
 
     return {
       launch,
+      launchEffect,
+      fork,
       start: Ref.set(running, true),
       stop: Ref.set(running, false),
       clear: Effect.sync(() => sim.clear()),

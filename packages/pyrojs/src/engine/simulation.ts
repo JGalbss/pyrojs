@@ -5,13 +5,19 @@ import { Particles, ParticleFlag } from "./particles.js"
 import { CanvasRenderer, type RenderOptions, type SurfaceFactory } from "./renderer.js"
 import { stepParticles, type Forces } from "./kernel.js"
 import { getEffect } from "./effects/registry.js"
-import type { BurstContext, Emitter, FireworkEffect, StarSpec } from "./emitter.js"
+import type {
+  BurstContext,
+  Emitter,
+  FireworkEffect,
+  StarSpec,
+  SubShellSpec,
+} from "./emitter.js"
 import type { FireworksConfig, LaunchSpec } from "../core/config.js"
 import { intensityPresets } from "../core/config.js"
 
 // The simulation is the imperative heart hosted by the Effect layer. It owns the
-// particle store, renderer, RNG, in-flight shells, and per-frame advancement.
-// Effects emit through it (it implements `Emitter`). One `tick()` is one frame.
+// particle store, renderer, RNG, in-flight shells (rising and fused sub-shells),
+// and per-frame advancement. Effects emit through it (it implements `Emitter`).
 
 export interface SimStats {
   readonly particles: number
@@ -19,8 +25,14 @@ export interface SimStats {
   readonly shells: number
 }
 
-// Reference canvas dimension; power/size scale relative to this so a show looks
-// the same on a phone and a 4K display.
+export interface BurstOverrides {
+  readonly colors?: ReadonlyArray<string>
+  readonly count?: number
+  readonly power?: number
+  readonly size?: number
+  readonly life?: number
+}
+
 const REFERENCE_DIMENSION = 800
 const BASE_COUNT = 110
 const BASE_POWER = 270
@@ -34,12 +46,16 @@ interface Shell {
   y: number
   vx: number
   vy: number
-  /** Upward deceleration tuned for a snappy, gravity-independent rise. */
-  accel: number
-  targetY: number
+  /** Downward acceleration applied to this shell (px/s²). */
+  gravity: number
+  /** Seconds until the fuse forces a burst. */
   ttl: number
+  /** Rising shells also burst the instant they reach apex / target height. */
+  burstAtApex: boolean
+  targetY: number
   trailTimer: number
   trailColor: Rgb
+  trailSize: number
   effect: FireworkEffect
   burst: ResolvedBurst
 }
@@ -65,6 +81,12 @@ const forcesFrom = (config: FireworksConfig): Forces => ({
   wind: config.wind,
   turbulence: config.turbulence,
 })
+
+const shellShouldBurst = (shell: Shell): boolean => {
+  if (shell.ttl <= 0) return true
+  if (shell.burstAtApex && (shell.vy >= 0 || shell.y <= shell.targetY)) return true
+  return false
+}
 
 export class Simulation implements Emitter {
   readonly rng: Random
@@ -108,6 +130,31 @@ export class Simulation implements Emitter {
     })
   }
 
+  shell(spec: SubShellSpec): void {
+    this.shells.push({
+      x: spec.x,
+      y: spec.y,
+      vx: spec.vx,
+      vy: spec.vy,
+      gravity: this.forces.gravity,
+      ttl: spec.fuse,
+      burstAtApex: false,
+      targetY: 0,
+      trailTimer: 0,
+      trailColor: brightTrailColor(spec.colors, this.rng),
+      trailSize: spec.size * 0.6,
+      effect: spec.effect,
+      burst: {
+        colors: spec.colors,
+        count: spec.count,
+        power: spec.power,
+        size: spec.size,
+        life: spec.life,
+        drag: spec.drag,
+      },
+    })
+  }
+
   resize(width: number, height: number, dpr: number): void {
     this.width = width
     this.height = height
@@ -126,28 +173,47 @@ export class Simulation implements Emitter {
     return Math.min(this.width, this.height) / REFERENCE_DIMENSION
   }
 
-  private resolveBurst(spec: LaunchSpec): ResolvedBurst {
+  private resolveBurstParams(overrides: BurstOverrides): ResolvedBurst {
     const preset = intensityPresets[this.config.intensity]
     const scale = this.scaleFactor()
-    const colors = resolveColors(spec.colors, this.palette)
     return {
-      colors,
-      count: Math.round((spec.count ?? BASE_COUNT) * preset.countScale),
-      power: (spec.power ?? 1) * BASE_POWER * preset.powerScale * scale,
-      size: (spec.size ?? 1) * BASE_SIZE * this.config.particleScale * clamp(scale, 0.6, 2.2),
-      life: (spec.life ?? BASE_LIFE),
+      colors: resolveColors(overrides.colors, this.palette),
+      count: Math.round((overrides.count ?? BASE_COUNT) * preset.countScale),
+      power: (overrides.power ?? 1) * BASE_POWER * preset.powerScale * scale,
+      size: (overrides.size ?? 1) * BASE_SIZE * this.config.particleScale * clamp(scale, 0.6, 2.2),
+      life: overrides.life ?? BASE_LIFE,
       drag: BASE_DRAG,
     }
   }
 
-  /** Fire a firework. Either bursts in place or rises from the ground first. */
+  /** Fire a built-in firework type, optionally as a rising shell. */
   launch(spec: LaunchSpec): void {
-    const burst = this.resolveBurst(spec)
+    const burst = this.resolveBurstParams(spec)
     const effect = getEffect(spec.type)
     const originX = (spec.x ?? this.rng.range(0.15, 0.85)) * this.width
     const targetY = (spec.y ?? this.rng.range(0.2, 0.5)) * this.height
-    const rise = spec.rise ?? true
+    this.fire(effect, originX, targetY, burst, spec.rise ?? true)
+  }
 
+  /** Fire an arbitrary effect (custom patterns, image bursts) at a normalized point. */
+  launchEffect(
+    effect: FireworkEffect,
+    x: number,
+    y: number,
+    overrides: BurstOverrides = {},
+    rise: boolean = false,
+  ): void {
+    const burst = this.resolveBurstParams(overrides)
+    this.fire(effect, x * this.width, y * this.height, burst, rise)
+  }
+
+  private fire(
+    effect: FireworkEffect,
+    originX: number,
+    targetY: number,
+    burst: ResolvedBurst,
+    rise: boolean,
+  ): void {
     if (!rise) {
       this.detonate(effect, originX, targetY, burst)
       return
@@ -171,11 +237,13 @@ export class Simulation implements Emitter {
       y: startY,
       vx: this.rng.range(-12, 12),
       vy: -v0,
-      accel,
-      targetY,
+      gravity: accel,
       ttl: riseTime + 0.4,
+      burstAtApex: true,
+      targetY,
       trailTimer: 0,
       trailColor: brightTrailColor(burst.colors, this.rng),
+      trailSize: BASE_SIZE * 0.8 * clamp(this.scaleFactor(), 0.6, 2.2),
       effect,
       burst,
     })
@@ -205,14 +273,14 @@ export class Simulation implements Emitter {
     let i = 0
     while (i < this.shells.length) {
       const shell = this.shells[i]
-      shell.vy += shell.accel * dt
+      shell.vy += shell.gravity * dt
       shell.vx += this.forces.wind * dt
       shell.x += shell.vx * dt
       shell.y += shell.vy * dt
       shell.ttl -= dt
       this.emitShellTrail(shell, dt)
 
-      if (shell.vy >= 0 || shell.y <= shell.targetY || shell.ttl <= 0) {
+      if (shellShouldBurst(shell)) {
         this.detonate(shell.effect, shell.x, shell.y, shell.burst)
         this.shells.splice(i, 1)
         continue
@@ -231,7 +299,7 @@ export class Simulation implements Emitter {
         vx: this.rng.range(-8, 8),
         vy: this.rng.range(-6, 18),
         life: 0.45,
-        size: BASE_SIZE * 0.8 * clamp(this.scaleFactor(), 0.6, 2.2),
+        size: shell.trailSize,
         drag: 1.4,
         color: shell.trailColor,
         flags: ParticleFlag.Glow | ParticleFlag.Twinkle,
@@ -239,11 +307,10 @@ export class Simulation implements Emitter {
     }
   }
 
-  /** Advance the whole simulation by `dt` seconds and render the frame. */
   tick(dt: number, timeSeconds: number): void {
     this.updateShells(dt)
     stepParticles(this.particles, dt, this.forces, this.rng)
-    this.renderer.beginFrame()
+    this.renderer.beginFrame(dt)
     this.renderer.drawParticles(this.particles, timeSeconds)
   }
 

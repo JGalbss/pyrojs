@@ -24,9 +24,11 @@ export const defaultForces: Forces = {
 // Exponential damping keeps drag stable regardless of frame rate.
 const dampingFactor = (drag: number, dt: number): number => Math.exp(-drag * dt)
 
+// A random-walk impulse: variance accumulates with time, so the per-step
+// magnitude scales with sqrt(dt) to stay frame-rate independent.
 const turbulent = (magnitude: number, dt: number, rng: Random): number => {
   if (magnitude <= 0) return 0
-  return (rng.next() - 0.5) * magnitude * dt
+  return (rng.next() - 0.5) * magnitude * Math.sqrt(dt)
 }
 
 /**

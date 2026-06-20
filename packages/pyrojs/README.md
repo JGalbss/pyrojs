@@ -27,7 +27,9 @@ One component, a full-screen show. Shells *rise*, arc, and *break* at apex into 
 - **Fast** — Structure-of-Arrays typed-array particle engine, zero per-frame allocation.
 - **Effect-TS to the core** — `Schema`-validated config, typed `Data.TaggedError` channels, a `Scope`-owned engine with forked fibers. The hot kernel runs in one `Effect.sync` per frame, so you get Effect everywhere *and* 60fps. Scores **100/100** on [agent-doctor](https://github.com/JGalbss/agent-doctor).
 - **Three layers** — drop-in `<Fireworks/>` → imperative `createFireworks()` → declarative `pyrojs/show` DSL.
-- **18 types** including shape bursts (hearts, stars). **Deterministic** with a `seed`.
+- **27 firework types** with real physics (spinners, willows, mid-air crossette splits, pistils…) plus shape bursts.
+- **Fireworkify any image, SVG, or text** — `fw.launchImage(url)` paints it with the break.
+- **Deterministic** with a `seed`.
 
 ## Quick examples
 

@@ -28,11 +28,20 @@ const compactUnit: Record<string, (value: number) => Duration.Duration> = {
 }
 
 const toDuration = (time: ShowTime): Duration.Duration => {
-  if (typeof time === "number") return Duration.millis(time)
+  if (typeof time === "number") {
+    if (!Number.isFinite(time)) return Duration.zero
+    return Duration.millis(Math.max(0, time))
+  }
   if (typeof time !== "string") return time
   const match = COMPACT_TIME.exec(time.trim())
-  if (match === null) return Duration.seconds(0)
+  if (match === null) return Duration.zero
   return compactUnit[match[2]](Number(match[1]))
+}
+
+// Sanitize a shell count: finite, non-negative integer (NaN/∞ → 0).
+const safeCount = (count: number): number => {
+  if (!Number.isFinite(count)) return 0
+  return Math.max(0, Math.floor(count))
 }
 
 // ---------------------------------------------------------------------------
@@ -89,7 +98,7 @@ export const burst = (specs: ReadonlyArray<LaunchSpecInput>): Show => ({
 
 /** Fire `count` copies of one shell simultaneously (a volley). */
 export const salvo = (count: number, spec: LaunchSpecInput): Show => ({
-  run: (engine) => fireEach(engine, Array.from({ length: Math.max(1, count) }, () => spec)),
+  run: (engine) => fireEach(engine, Array.from({ length: safeCount(count) }, () => spec)),
 })
 
 /** Pause for a duration ("2s", "500ms", 500, Duration.seconds(2)). */
@@ -119,15 +128,18 @@ export interface RepeatOptions {
 
 /** Repeat a show `times` times, spaced by `every`. */
 export const repeat = (options: RepeatOptions, item: Show): Show => ({
-  run: (engine) =>
-    item.run(engine).pipe(
+  run: (engine) => {
+    const times = safeCount(options.times)
+    if (times <= 0) return Effect.void
+    return item.run(engine).pipe(
       Effect.repeat(
         Schedule.spaced(toDuration(options.every)).pipe(
-          Schedule.intersect(Schedule.recurs(Math.max(0, options.times - 1))),
+          Schedule.intersect(Schedule.recurs(times - 1)),
         ),
       ),
       Effect.asVoid,
-    ),
+    )
+  },
 })
 
 export interface Cue {
@@ -173,6 +185,7 @@ export const playShow = (
   config?: FireworksConfigInput,
 ): FireworksHandle => {
   const handle = createFireworks(canvas, { autoplay: false, ...config })
-  Effect.runFork(show.run(handle.engine))
+  // Fork into the engine's scope so the show is interrupted on handle.destroy().
+  Effect.runSync(handle.engine.fork(show.run(handle.engine)))
   return handle
 }

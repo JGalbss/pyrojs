@@ -28,19 +28,16 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
     },
     "./react": {
-      "types": "./dist/react.d.ts",
-      "import": "./dist/react.js",
-      "require": "./dist/react.cjs"
+      "import": { "types": "./dist/react.d.ts", "default": "./dist/react.js" },
+      "require": { "types": "./dist/react.d.cts", "default": "./dist/react.cjs" }
     },
     "./show": {
-      "types": "./dist/show.d.ts",
-      "import": "./dist/show.js",
-      "require": "./dist/show.cjs"
+      "import": { "types": "./dist/show.d.ts", "default": "./dist/show.js" },
+      "require": { "types": "./dist/show.d.cts", "default": "./dist/show.cjs" }
     },
     "./package.json": "./package.json"
   },
@@ -63,21 +60,15 @@
   },
   "peerDependencies": {
     "effect": ">=3.10.0",
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react": ">=18.0.0"
   },
   "peerDependenciesMeta": {
-    "effect": {
-      "optional": true
-    },
     "react": {
-      "optional": true
-    },
-    "react-dom": {
       "optional": true
     }
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitest/coverage-v8": "^4.1.0",

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import { decodeFireworksConfig, type FireworksConfig } from "../core/config.js"
 import { Simulation } from "./simulation.js"
 import type { SurfaceFactory } from "./renderer.js"
+import { imageEffect, sampleImageData } from "./image.js"
 
 // A no-op 2D context + surface factory so the simulation can run fully headless.
 const make2dMock = (): CanvasRenderingContext2D => {
@@ -114,5 +115,28 @@ describe("Simulation", () => {
     a.launch({ type: "peony", x: 0.5, y: 0.5, rise: false })
     b.launch({ type: "peony", x: 0.5, y: 0.5, rise: false })
     expect(a.stats().particles).toBe(b.stats().particles)
+  })
+
+  it("crossette splits into secondary spark shells that later burst", () => {
+    const sim = makeSim(makeConfig({}))
+    sim.resize(800, 600, 1)
+    sim.launch({ type: "crossette", x: 0.5, y: 0.5, rise: false })
+    expect(sim.stats().shells).toBeGreaterThan(0)
+    tickFor(sim, 1)
+    expect(sim.stats().shells).toBe(0)
+    expect(sim.stats().particles).toBeGreaterThan(0)
+  })
+
+  it("launchEffect fires a custom image burst", () => {
+    const data = new Uint8ClampedArray(6 * 6 * 4)
+    for (let i = 0; i < data.length; i += 4) {
+      data[i] = 255
+      data[i + 3] = 255
+    }
+    const points = sampleImageData(data, 6, 6)
+    const sim = makeSim(makeConfig({}))
+    sim.resize(800, 600, 1)
+    sim.launchEffect(imageEffect(points), 0.5, 0.5, { count: points.length }, false)
+    expect(sim.stats().particles).toBe(points.length)
   })
 })
